@@ -1,0 +1,6 @@
+@InfiniteCraftGame_HostAddress = http://localhost:5232
+
+GET {{InfiniteCraftGame_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

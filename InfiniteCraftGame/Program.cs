@@ -15,7 +15,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IAiService, AiService>();
 builder.Services.AddScoped<IWordGenerationService, WordGenerationService>();
-
+builder
+    .Services.AddOptions<AiServiceOptions>()
+    .BindConfiguration("AiService")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+;
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

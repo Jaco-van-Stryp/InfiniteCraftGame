@@ -1,11 +1,10 @@
-﻿using OpenAI.Chat;
-
 namespace InfiniteCraftGame.Services.AIService;
 
 public interface IAiService
 {
     Task<string> GenerateTextAsync(
-        IEnumerable<ChatMessage> messages,
+        string systemPrompt,
+        string userMessage,
         CancellationToken ct = default
     );
 }

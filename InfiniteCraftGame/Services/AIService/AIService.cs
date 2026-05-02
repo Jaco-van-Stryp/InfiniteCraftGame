@@ -1,47 +1,47 @@
-﻿using System.ClientModel;
+using Anthropic;
+using Anthropic.Models.Messages;
 using Microsoft.Extensions.Options;
-using OpenAI;
-using OpenAI.Chat;
 
 namespace InfiniteCraftGame.Services.AIService;
 
 public class AiService : IAiService
 {
-    private const string BaseUrl = "https://api.x.ai/v1";
-    private readonly ChatClient _chat;
+    private const string ModelId = "claude-haiku-4-5";
+    private readonly AnthropicClient _client;
 
     public AiService(IOptions<AiServiceOptions> options)
     {
-        var apiKey = options.Value.ApiKey;
-
-        var client = new OpenAIClient(
-            new ApiKeyCredential(apiKey),
-            new OpenAIClientOptions { Endpoint = new Uri(BaseUrl) }
-        );
-
-        _chat = client.GetChatClient("grok-4-1-fast-non-reasoning");
+        _client = new AnthropicClient { ApiKey = options.Value.ApiKey };
     }
 
     public async Task<string> GenerateTextAsync(
-        IEnumerable<ChatMessage> messages,
+        string systemPrompt,
+        string userMessage,
         CancellationToken ct = default
     )
     {
         try
         {
-            var options = new ChatCompletionOptions
-            {
-                ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat(),
-            };
+            var response = await _client.Messages.Create(
+                new MessageCreateParams
+                {
+                    Model = ModelId,
+                    MaxTokens = 64,
+                    System = new List<TextBlockParam>
+                    {
+                        new() { Text = systemPrompt, CacheControl = new CacheControlEphemeral() },
+                    },
+                    Messages = [new() { Role = Role.User, Content = userMessage }],
+                }
+            );
 
-            var result = await _chat.CompleteChatAsync(messages, options, cancellationToken: ct);
-            return result.Value.Content[0].Text;
+            return response.Content.Select(b => b.Value).OfType<TextBlock>().FirstOrDefault()?.Text
+                ?? string.Empty;
         }
-        catch (ClientResultException ex)
+        catch (Exception ex)
         {
-            var body = ex.GetRawResponse()?.Content.ToString() ?? "(no body)";
             throw new InvalidOperationException(
-                $"xAI chat failed [{ex.Status}] using model grok-4-1-fast-non-reasoning': {body}",
+                $"Anthropic chat failed using model '{ModelId}': {ex.Message}",
                 ex
             );
         }

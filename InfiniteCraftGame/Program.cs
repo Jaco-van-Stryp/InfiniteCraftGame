@@ -1,3 +1,4 @@
+using InfiniteCraftGame.Features.CombineWord;
 using InfiniteCraftGame.Infrastructure.Data;
 using InfiniteCraftGame.Services.AIService;
 using InfiniteCraftGame.Services.WordGenerationService;
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IAiService, AiService>();
 builder.Services.AddScoped<IWordGenerationService, WordGenerationService>();
@@ -29,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapCombineWordEndpoint();
 app.UseHttpsRedirection();
 
 app.Run();

@@ -44,6 +44,13 @@ export class OpenApiHttpParams {
     };
   }
 
+  private resolveOptions(local?: ParamOptions): Required<ParamOptions> {
+    return {
+      explode: local?.explode ?? this.defaults.explode,
+      delimiter: local?.delimiter ?? this.defaults.delimiter,
+    };
+  }
+
   /**
    * Replace the parameter's values and (optionally) its options.
    * Options are stored per-parameter (not global).
@@ -127,13 +134,6 @@ export class OpenApiHttpParams {
     let httpParams = new HttpParams({encoder: new IdentityHttpParameterCodec()});
 
     return httpParams.appendAll(records);
-  }
-
-  private resolveOptions(local?: ParamOptions): Required<ParamOptions> {
-    return {
-      explode: local?.explode ?? this.defaults.explode,
-      delimiter: local?.delimiter ?? this.defaults.delimiter,
-    };
   }
 }
 

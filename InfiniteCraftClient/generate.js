@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const IMAGE_TAG = process.env.OPENAPI_GEN_VERSION || 'v7.20.0';
+const IMAGE_TAG = process.env.OPENAPI_GEN_VERSION || 'latest';
 const specUrl = 'http://host.docker.internal:5232/openapi/v1.json';
 
 const outputRelative = path.join('src', 'app', 'api');

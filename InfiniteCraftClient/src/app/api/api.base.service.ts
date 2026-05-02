@@ -13,10 +13,10 @@ import {Configuration} from './configuration';
 import {concatHttpParamsObject, OpenApiHttpParams, QueryParamStyle} from './query.params';
 
 export class BaseService {
+  protected basePath = 'https://host.docker.internal:7099';
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;
-  protected basePath = 'https://host.docker.internal:7099';
 
   constructor(basePath?: string | string[], configuration?: Configuration) {
     this.configuration = configuration || new Configuration();
@@ -68,15 +68,16 @@ export class BaseService {
         return httpParams.append(key, value.toString());
       } else if (value instanceof Date) {
         return httpParams.append(key, value.toISOString());
-      } else if (Array.isArray(value)) {
-        // Otherwise, if it's an array, add each element.
+      } else if (Array.isArray(value) || value instanceof Set) {
+        // Otherwise, if it's an array or set, add each element.
+        const array = Array.isArray(value) ? value : Array.from(value);
         if (paramStyle === QueryParamStyle.Form) {
-          return httpParams.set(key, value, {explode: explode, delimiter: ','});
+          return httpParams.set(key, array, {explode: explode, delimiter: ','});
         } else if (paramStyle === QueryParamStyle.SpaceDelimited) {
-          return httpParams.set(key, value, {explode: explode, delimiter: ' '});
+          return httpParams.set(key, array, {explode: explode, delimiter: ' '});
         } else {
           // PipeDelimited
-          return httpParams.set(key, value, {explode: explode, delimiter: '|'});
+          return httpParams.set(key, array, {explode: explode, delimiter: '|'});
         }
       } else {
         // Otherwise, if it's an object, add each field.

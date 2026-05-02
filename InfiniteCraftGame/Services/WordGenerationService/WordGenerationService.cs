@@ -30,16 +30,26 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
 
         if (word == null)
         {
+            var (combined, emoji) = await CombineWordsAsync(wordOne, wordTwo, userId);
             return new CombineWordResponse(
-                WordCombination: await CombineWordsAsync(wordOne, wordTwo, userId),
+                WordCombination: combined,
+                Emoji: emoji,
                 FirstDiscovery: true
             );
         }
 
-        return new CombineWordResponse(WordCombination: word.WordCombined, FirstDiscovery: false);
+        return new CombineWordResponse(
+            WordCombination: word.WordCombined,
+            Emoji: word.Emoji ?? "✨",
+            FirstDiscovery: false
+        );
     }
 
-    private async Task<string> CombineWordsAsync(string wordOne, string wordTwo, Guid userId)
+    private async Task<(string Word, string Emoji)> CombineWordsAsync(
+        string wordOne,
+        string wordTwo,
+        Guid userId
+    )
     {
         var result = await aiService.GenerateTextAsync(
             InfiniteCraftSystemPrompt(),
@@ -51,48 +61,40 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
             wordTwo,
             result
         );
-        if (string.IsNullOrWhiteSpace(result) || result.Any(char.IsWhiteSpace))
-            return "Nothing";
+
+        var parts = result.Split(':');
+        var word = parts[0].Trim();
+        var emoji = parts.Length > 1 ? parts[1].Trim() : "✨";
+
+        if (string.IsNullOrWhiteSpace(word) || word.Any(char.IsWhiteSpace))
+            return ("Nothing", "❓");
+
         var combinedWord = new WordCombinations
         {
             WordOne = wordOne,
             WordTwo = wordTwo,
-            WordCombined = result,
+            WordCombined = word,
+            Emoji = emoji,
             DiscoveredById = userId,
         };
 
-        var userWord = new UserWords { WordUnlocked = result, UserId = userId };
+        var userWord = new UserWords
+        {
+            WordUnlocked = word,
+            Emoji = emoji,
+            UserId = userId,
+        };
         await context.UserWords.AddAsync(userWord);
         await context.WordCombinations.AddAsync(combinedWord);
         await context.SaveChangesAsync();
-        return result;
+        return (word, emoji);
     }
 
     private string InfiniteCraftSystemPrompt() =>
         """
-            You are the crafting engine for a word-fusion game like Infinite Craft. Given "A + B", output the single most fitting result.
-
-            Rules:
-            - Output EXACTLY ONE token: a single word or established PascalCase name. No spaces, punctuation, quotes, or explanation.
-            - The result MUST be a real, recognizable thing — a dictionary word, place, named character, brand, phenomenon, food, myth, or pop-culture reference. If a literate adult wouldn't recognize it without you explaining, it's wrong.
-            - NEVER glue the inputs together into a new compound. Frog + Pineapple ≠ PineappleFrog; pick Jungle, TreeFrog, or SpongeBob. Cat + Sky ≠ SkyCat; pick Kite or Pegasus. Fire + Coffee ≠ FireCoffee; pick Espresso.
-            - Compounds are allowed only when the compound itself is the real name (IronMan, BlackHole, MountEverest, PoisonDartFrog). When in doubt, pick a single word.
-            - Prefer the iconic "of course" answer over the clever one. Stay grounded — don't leap tiers (Mud + Fire = Brick, not Castle).
-            - Commutative: A + B = B + A.
-            - No tautologies (Water + Wet ≠ Water; pick Mist or Puddle). No vague categories (Thing, Stuff, Animal).
-            - Draw from physics, biology, mythology, history, film, games, music, cuisine, idioms, religion, and folklore.
-            - Treat misspellings charitably — interpret each input as the closest real word or name (e.g. "patric" → Patrick, "retart" → Restart, "spongbob" → SpongeBob) and craft from the corrected meaning.
-            - ALWAYS produce a real, creative result. Never bail. Every pair has a fitting fusion — if the answer isn't obvious, ask: what category contains both? what idiom or phrase links them? what character, brand, place, or process uses both? what does A do TO B, or B do TO A? Pick the strongest connection and commit. Do NOT respond with "Nothing", "None", "Unknown", or any refusal, and never echo the inputs glued together.
-
-            Examples:
-            Fire + Water → Steam
-            Mud + Fire → Brick
-            Human + Fish → Mermaid
-            Wood + Boy → Pinocchio
-            Bat + Man → Batman
-            Sun + Moon → Eclipse
-            Frog + Pineapple → SpongeBob
-
-            Respond with only the result.
+            Word-fusion game. Given "A + B", output the single best result as word:emoji.
+            - Format: one word (or real PascalCase name) followed by a colon and one relevant emoji. Nothing else.
+            - Must be a real, recognizable thing. NEVER glue inputs (Frog+Pineapple→SpongeBob:🧽, not PineappleFrog). Compounds only if the name is real (IronMan:🦸, BlackHole:🌑).
+            - Prefer the obvious answer. No tautologies. Never refuse.
             """;
 }

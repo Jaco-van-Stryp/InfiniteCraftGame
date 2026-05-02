@@ -13,7 +13,7 @@
     @if (canvasWords().length === 0) {
       <div aria-hidden="true" class="canvas-empty">
         <div class="canvas-empty-icon">⚗️</div>
-        <p>Click words from the Codex to place them here</p>
+        <p>Click words on the right to place them here</p>
         <p class="canvas-empty-sub">Drop one word onto another to combine them</p>
       </div>
     }
@@ -32,7 +32,7 @@
         role="button"
         tabindex="0"
       >
-        <span aria-hidden="true" class="cw-emoji">{{ getEmoji(item.word) }}</span>
+        <span aria-hidden="true" class="cw-emoji">{{ item.emoji }}</span>
         <span class="cw-text">{{ item.word }}</span>
         <button
           (click)="removeFromCanvas(item.instanceId)"
@@ -66,7 +66,7 @@
   <!-- Sidebar -->
   <aside aria-label="Alchemy Codex — word list" class="sidebar">
     <div class="sidebar-header">
-      <h1 class="sidebar-title">⚗️ Alchemy Codex</h1>
+      <h1 class="sidebar-title">⚗️ Word Craft</h1>
       <p class="sidebar-count">{{ allWords().length }} elements discovered</p>
     </div>
 
@@ -85,7 +85,7 @@
 
     <div class="word-list" role="list">
       @for (w of filteredWords(); track w.id) {
-        <app-word (add)="addToCanvas($event)" [word]="w.word"/>
+        <app-word (add)="addToCanvas($event)" [emoji]="w.emoji" [word]="w.word"/>
       }
       @if (filteredWords().length === 0) {
         <p class="no-results">No elements match "{{ searchQuery() }}"</p>

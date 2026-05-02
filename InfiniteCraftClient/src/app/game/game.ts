@@ -10,11 +10,12 @@ import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
 import { CombineWordCommand, GetAllWordsResponse, InfiniteCraftGameService } from '../api';
 import { SoundService } from '../sound.service';
-import { Word } from '../word/word';
+import { Word, WordSelection } from '../word/word';
 
 interface CanvasWord {
   instanceId: string;
   word: string;
+  emoji: string;
   x: number;
   y: number;
   isNew: boolean;
@@ -56,28 +57,6 @@ export class Game implements OnInit {
   private sound = inject(SoundService);
   private dragState: DragState | null = null;
 
-  private readonly EMOJIS = [
-    '🔥',
-    '💧',
-    '🌿',
-    '⚡',
-    '🌊',
-    '🏔️',
-    '🌙',
-    '☀️',
-    '❄️',
-    '🌪️',
-    '✨',
-    '🌱',
-    '🍃',
-    '🌍',
-    '💎',
-    '🔮',
-    '⚗️',
-    '🧪',
-    '🌸',
-    '🦋',
-  ];
   private readonly COLORS = [
     '#ff6b6b',
     '#ffd93d',
@@ -102,14 +81,14 @@ export class Game implements OnInit {
     });
   }
 
-  addToCanvas(word: string) {
+  addToCanvas({ word, emoji }: WordSelection) {
     const id = crypto.randomUUID();
     const x = 80 + Math.random() * 500;
     const y = 60 + Math.random() * 350;
     this.sound.place();
     this.canvasWords.update((words) => [
       ...words,
-      { instanceId: id, word, x, y, isNew: true, isCombining: false },
+      { instanceId: id, word, emoji, x, y, isNew: true, isCombining: false },
     ]);
     setTimeout(() => {
       this.canvasWords.update((words) =>
@@ -190,6 +169,7 @@ export class Game implements OnInit {
     };
     this.gameService.combineWord(command).subscribe((response) => {
       const combined = response.wordCombination ?? '???';
+      const emoji = response.emoji ?? '✨';
       const midX = (wordA.x + wordB.x) / 2;
       const midY = (wordA.y + wordB.y) / 2;
       const newId = crypto.randomUUID();
@@ -200,13 +180,21 @@ export class Game implements OnInit {
         );
         return [
           ...filtered,
-          { instanceId: newId, word: combined, x: midX, y: midY, isNew: true, isCombining: false },
+          {
+            instanceId: newId,
+            word: combined,
+            emoji,
+            x: midX,
+            y: midY,
+            isNew: true,
+            isCombining: false,
+          },
         ];
       });
 
       const isNewWord = !this.allWords().some((w) => w.word === combined);
       if (isNewWord) {
-        this.allWords.update((ws) => [...ws, { id: crypto.randomUUID(), word: combined }]);
+        this.allWords.update((ws) => [...ws, { id: crypto.randomUUID(), word: combined, emoji }]);
       }
 
       if (response.firstDiscovery && isNewWord) {
@@ -235,11 +223,5 @@ export class Game implements OnInit {
     let h = 0;
     for (let i = 0; i < word.length; i++) h = (h * 31 + word.charCodeAt(i)) & 0xffffffff;
     return this.COLORS[Math.abs(h) % this.COLORS.length];
-  }
-
-  getEmoji(word: string): string {
-    let h = 0;
-    for (let i = 0; i < word.length; i++) h = (h * 31 + word.charCodeAt(i)) & 0xffffffff;
-    return this.EMOJIS[Math.abs(h) % this.EMOJIS.length];
   }
 }

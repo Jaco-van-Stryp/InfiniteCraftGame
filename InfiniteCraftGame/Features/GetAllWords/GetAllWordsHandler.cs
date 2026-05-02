@@ -1,5 +1,4 @@
-﻿using Bogus;
-using InfiniteCraftGame.Infrastructure.Data;
+﻿using InfiniteCraftGame.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +18,22 @@ public class GetAllWordsHandler(AppDbContext context)
         var listWords = new List<GetAllWordsResponse>();
         if (words.Count == 0)
         {
-            var faker = new Faker();
-            for (var i = 0; i < 10; i++)
-            {
-                var newWord = new GetAllWordsResponse(
-                    Id: faker.Random.Guid(),
-                    Word: faker.Random.Word()
-                );
-                listWords.Add(newWord);
-            }
+            listWords.AddRange([
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Seed", Emoji: "🌱"),
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Spark", Emoji: "⚡"),
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Clay", Emoji: "🏺"),
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Song", Emoji: "🎵"),
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Coin", Emoji: "🪙"),
+                new GetAllWordsResponse(Id: Guid.NewGuid(), Word: "Dream", Emoji: "💭"),
+            ]);
         }
 
         listWords.AddRange(
-            words.Select(word => new GetAllWordsResponse(Id: word.Id, Word: word.WordUnlocked))
+            words.Select(word => new GetAllWordsResponse(
+                Id: word.Id,
+                Word: word.WordUnlocked,
+                Emoji: word.Emoji ?? "✨"
+            ))
         );
 
         return listWords;

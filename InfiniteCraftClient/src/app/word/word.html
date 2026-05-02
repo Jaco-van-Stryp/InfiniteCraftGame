@@ -1,5 +1,5 @@
 <button
-  (click)="add.emit(word())"
+  (click)="add.emit({word: word(), emoji: emoji()})"
   [attr.aria-label]="'Add ' + word() + ' to workspace'"
   [style]="{'--glow': glowColor()}"
   class="word-chip"

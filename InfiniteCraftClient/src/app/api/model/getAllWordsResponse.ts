@@ -11,4 +11,5 @@
 export interface GetAllWordsResponse {
   id: string;
   word: string;
+  emoji: string;
 }

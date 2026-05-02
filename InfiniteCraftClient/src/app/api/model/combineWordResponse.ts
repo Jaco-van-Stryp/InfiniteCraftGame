@@ -10,5 +10,6 @@
 
 export interface CombineWordResponse {
   wordCombination?: string;
+  emoji?: string;
   firstDiscovery?: boolean;
 }

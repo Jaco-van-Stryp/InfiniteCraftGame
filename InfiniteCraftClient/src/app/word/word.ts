@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
+export interface WordSelection {
+  word: string;
+  emoji: string;
+}
+
 @Component({
   selector: 'app-word',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -9,30 +14,9 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 })
 export class Word {
   word = input.required<string>();
-  add = output<string>();
+  emoji = input.required<string>();
+  add = output<WordSelection>();
 
-  private readonly EMOJIS = [
-    '🔥',
-    '💧',
-    '🌿',
-    '⚡',
-    '🌊',
-    '🏔️',
-    '🌙',
-    '☀️',
-    '❄️',
-    '🌪️',
-    '✨',
-    '🌱',
-    '🍃',
-    '🌍',
-    '💎',
-    '🔮',
-    '⚗️',
-    '🧪',
-    '🌸',
-    '🦋',
-  ];
   private readonly COLORS = [
     '#ff6b6b',
     '#ffd93d',
@@ -51,6 +35,5 @@ export class Word {
     return Math.abs(h);
   });
 
-  emoji = computed(() => this.EMOJIS[this.wordHash() % this.EMOJIS.length]);
   glowColor = computed(() => this.COLORS[this.wordHash() % this.COLORS.length]);
 }

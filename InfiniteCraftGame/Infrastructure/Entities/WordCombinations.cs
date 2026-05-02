@@ -15,5 +15,8 @@ public class WordCombinations
     [MaxLength(255)]
     public required string WordCombined { get; init; }
 
+    [MaxLength(10)]
+    public string? Emoji { get; init; }
+
     public Guid? DiscoveredById { get; init; }
 }

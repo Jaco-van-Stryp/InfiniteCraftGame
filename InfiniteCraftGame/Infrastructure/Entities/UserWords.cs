@@ -9,5 +9,8 @@ public class UserWords
     [MaxLength(255)]
     public required string WordUnlocked { get; init; }
 
+    [MaxLength(10)]
+    public string? Emoji { get; init; }
+
     public Guid? UserId { get; init; }
 }

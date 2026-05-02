@@ -9,5 +9,4 @@ import { Badge } from 'primeng/badge';
 })
 export class Word {
   word = input.required<string>();
-  firstDiscovery = input.required<boolean>();
 }

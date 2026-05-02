@@ -1,9 +1,3 @@
-<input [(ngModel)]="wordOne">
-<input [(ngModel)]="wordTwo">
-<label>{{ wordCombined }}</label>
-<p-button (click)="setCombinedWords()">Combine Words</p-button>
-
-
-@for (word of listOfWords; track word.wordCombination) {
-  <app-word [firstDiscovery]="word.firstDiscovery ?? true" [word]="word.wordCombination ?? 'Nothing'"></app-word>
+@for (word of listOfWords; track word.id) {
+  <app-word [word]="word.word ?? 'Nothing'"></app-word>
 }

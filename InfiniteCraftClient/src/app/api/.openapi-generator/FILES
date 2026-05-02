@@ -11,6 +11,7 @@ git_push.sh
 index.ts
 model/combineWordCommand.ts
 model/combineWordResponse.ts
+model/getAllWordsResponse.ts
 model/models.ts
 param.ts
 provide-api.ts

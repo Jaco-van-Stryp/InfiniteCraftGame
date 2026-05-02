@@ -1,4 +1,5 @@
 using InfiniteCraftGame.Features.CombineWord;
+using InfiniteCraftGame.Features.GetAllWords;
 using InfiniteCraftGame.Infrastructure.Data;
 using InfiniteCraftGame.Services.AIService;
 using InfiniteCraftGame.Services.WordGenerationService;
@@ -41,6 +42,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAnyOrigin");
 app.MapCombineWordEndpoint();
+app.MapGetAllWordsEndpoint();
 app.UseHttpsRedirection();
 
 app.Run();

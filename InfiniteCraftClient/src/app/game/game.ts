@@ -1,45 +1,25 @@
-import { Component, inject } from '@angular/core';
-import { CombineWordCommand, CombineWordResponse, InfiniteCraftGameService } from '../api';
+import { Component, inject, OnInit } from '@angular/core';
+import { CombineWordCommand, GetAllWordsResponse, InfiniteCraftGameService } from '../api';
 import { FormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { faker } from '@faker-js/faker';
 import { Word } from '../word/word';
 
 @Component({
   selector: 'app-game',
-  imports: [FormsModule, Button, Word],
+  imports: [FormsModule, Word],
   templateUrl: './game.html',
   styleUrl: './game.css',
 })
-export class Game {
-  listOfWords: CombineWordResponse[] = [
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: true,
-    },
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: false,
-    },
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: true,
-    },
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: false,
-    },
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: true,
-    },
-    {
-      wordCombination: faker.word.words(1),
-      firstDiscovery: false,
-    },
-  ];
+export class Game implements OnInit {
+  listOfWords: GetAllWordsResponse[] = {} as GetAllWordsResponse[];
 
   gameService = inject(InfiniteCraftGameService);
+
+  ngOnInit() {
+    this.gameService.getAllWords().subscribe((words) => {
+      this.listOfWords = words;
+    });
+  }
+
   wordOne: string = '';
   wordTwo: string = '';
   wordCombined: string = '';

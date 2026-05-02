@@ -1,3 +1,96 @@
-@for (word of listOfWords; track word.id) {
-  <app-word [word]="word.word ?? 'Nothing'"></app-word>
-}
+<div class="game-container">
+
+  <!-- Canvas workspace -->
+  <div
+    (mouseleave)="stopDrag()"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    aria-label="Combination workspace — drag words here to combine them"
+    class="canvas"
+    role="region"
+  >
+    <!-- Background hint -->
+    @if (canvasWords().length === 0) {
+      <div aria-hidden="true" class="canvas-empty">
+        <div class="canvas-empty-icon">⚗️</div>
+        <p>Click words from the Codex to place them here</p>
+        <p class="canvas-empty-sub">Drop one word onto another to combine them</p>
+      </div>
+    }
+
+    <!-- Canvas word chips -->
+    @for (item of canvasWords(); track item.instanceId) {
+      <div
+        (mousedown)="onMouseDown($event, item.instanceId)"
+        [attr.aria-label]="item.word + ' — drag to combine'"
+        [class.is-combining]="item.isCombining"
+        [class.is-new]="item.isNew"
+        [style.left.px]="item.x"
+        [style.top.px]="item.y"
+        [style]="{'--glow': getGlowColor(item.word)}"
+        class="canvas-word"
+        role="button"
+        tabindex="0"
+      >
+        <span aria-hidden="true" class="cw-emoji">{{ getEmoji(item.word) }}</span>
+        <span class="cw-text">{{ item.word }}</span>
+        <button
+          (click)="removeFromCanvas(item.instanceId)"
+          (mousedown)="$event.stopPropagation()"
+          [attr.aria-label]="'Remove ' + item.word"
+          class="cw-remove"
+        >×
+        </button>
+      </div>
+    }
+
+    <!-- First-discovery toast -->
+    @if (lastDiscovery()) {
+      <div aria-live="polite" class="discovery-toast" role="alert">
+        <span class="dt-icon">✨</span>
+        <span>First Discovery:</span>
+        <strong>{{ lastDiscovery() }}</strong>
+      </div>
+    }
+
+    <!-- Combining indicator -->
+    @if (combining()) {
+      <div aria-label="Combining…" aria-live="polite" class="combining-indicator">
+        <span class="ci-dot"></span>
+        <span class="ci-dot"></span>
+        <span class="ci-dot"></span>
+      </div>
+    }
+  </div>
+
+  <!-- Sidebar -->
+  <aside aria-label="Alchemy Codex — word list" class="sidebar">
+    <div class="sidebar-header">
+      <h1 class="sidebar-title">⚗️ Alchemy Codex</h1>
+      <p class="sidebar-count">{{ allWords().length }} elements discovered</p>
+    </div>
+
+    <div class="sidebar-search">
+      <span aria-hidden="true" class="search-icon">🔍</span>
+      <input
+        (input)="searchQuery.set($any($event.target).value)"
+        [value]="searchQuery()"
+        aria-label="Search elements"
+        class="search-input"
+        pInputText
+        placeholder="Search elements…"
+        type="search"
+      />
+    </div>
+
+    <div class="word-list" role="list">
+      @for (w of filteredWords(); track w.id) {
+        <app-word (add)="addToCanvas($event)" [word]="w.word"/>
+      }
+      @if (filteredWords().length === 0) {
+        <p class="no-results">No elements match "{{ searchQuery() }}"</p>
+      }
+    </div>
+  </aside>
+
+</div>

@@ -1,1 +1,11 @@
-  <p-badge [value]="word()" severity="success"/>
+<button
+  (click)="add.emit(word())"
+  [attr.aria-label]="'Add ' + word() + ' to workspace'"
+  [style]="{'--glow': glowColor()}"
+  class="word-chip"
+  role="listitem"
+>
+  <span aria-hidden="true" class="chip-emoji">{{ emoji() }}</span>
+  <span class="chip-text">{{ word() }}</span>
+  <span aria-hidden="true" class="chip-plus">+</span>
+</button>

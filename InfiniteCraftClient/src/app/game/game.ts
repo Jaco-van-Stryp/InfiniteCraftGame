@@ -1,15 +1,44 @@
 import { Component, inject } from '@angular/core';
-import { CombineWordCommand, InfiniteCraftGameService } from '../api';
+import { CombineWordCommand, CombineWordResponse, InfiniteCraftGameService } from '../api';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
+import { faker } from '@faker-js/faker';
+import { Word } from '../word/word';
 
 @Component({
   selector: 'app-game',
-  imports: [FormsModule, Button],
+  imports: [FormsModule, Button, Word],
   templateUrl: './game.html',
   styleUrl: './game.css',
 })
 export class Game {
+  listOfWords: CombineWordResponse[] = [
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: true,
+    },
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: false,
+    },
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: true,
+    },
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: false,
+    },
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: true,
+    },
+    {
+      wordCombination: faker.word.words(1),
+      firstDiscovery: false,
+    },
+  ];
+
   gameService = inject(InfiniteCraftGameService);
   wordOne: string = '';
   wordTwo: string = '';

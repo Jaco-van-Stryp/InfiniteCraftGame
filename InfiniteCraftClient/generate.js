@@ -11,9 +11,12 @@ const outputAbsolute = path.resolve(outputRelative);
 
 const generator = 'typescript-angular';
 
-const additionalProps = ['ngVersion=21.0.0', 'providedInRoot=true', 'serviceSuffix=Service'].join(
-  ',',
-);
+const additionalProps = [
+  'ngVersion=21.0.0',
+  'providedInRoot=true',
+  'serviceSuffix=Service',
+  'basePath=https://localhost:7099',
+].join(',');
 
 const dockerImage = `openapitools/openapi-generator-cli:${IMAGE_TAG}`;
 

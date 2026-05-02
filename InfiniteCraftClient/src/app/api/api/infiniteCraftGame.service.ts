@@ -9,19 +9,19 @@
  */
 /* tslint:disable:no-unused-variable member-ordering */
 
-import {Inject, Injectable, Optional} from '@angular/core';
-import {HttpClient, HttpContext, HttpEvent, HttpResponse,} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { HttpClient, HttpContext, HttpEvent, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 // @ts-ignore
-import {CombineWordCommand} from '../model/combineWordCommand';
+import { CombineWordCommand } from '../model/combineWordCommand';
 // @ts-ignore
-import {CombineWordResponse} from '../model/combineWordResponse';
+import { CombineWordResponse } from '../model/combineWordResponse';
 
 // @ts-ignore
-import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
-import {Configuration} from '../configuration';
-import {BaseService} from '../api.base.service';
+import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
+import { Configuration } from '../configuration';
+import { BaseService } from '../api.base.service';
 
 @Injectable({
   providedIn: 'root',
@@ -120,15 +120,15 @@ export class InfiniteCraftGameService extends BaseService {
     }
 
     let localVarPath = `/CombineWord`;
-    const {basePath, withCredentials} = this.configuration;
+    const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<CombineWordResponse>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: combineWordCommand,
       responseType: <any>responseType_,
-      ...(withCredentials ? {withCredentials} : {}),
+      ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
-      ...(localVarTransferCache !== undefined ? {transferCache: localVarTransferCache} : {}),
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
       reportProgress: reportProgress,
     });
   }

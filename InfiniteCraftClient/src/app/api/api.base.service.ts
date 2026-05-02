@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {HttpHeaders, HttpParameterCodec} from '@angular/common/http';
-import {CustomHttpParameterCodec} from './encoder';
-import {Configuration} from './configuration';
-import {concatHttpParamsObject, OpenApiHttpParams, QueryParamStyle} from './query.params';
+import { HttpHeaders, HttpParameterCodec } from '@angular/common/http';
+import { CustomHttpParameterCodec } from './encoder';
+import { Configuration } from './configuration';
+import { concatHttpParamsObject, OpenApiHttpParams, QueryParamStyle } from './query.params';
 
 export class BaseService {
   protected basePath = 'https://host.docker.internal:7099';
@@ -72,12 +72,12 @@ export class BaseService {
         // Otherwise, if it's an array or set, add each element.
         const array = Array.isArray(value) ? value : Array.from(value);
         if (paramStyle === QueryParamStyle.Form) {
-          return httpParams.set(key, array, {explode: explode, delimiter: ','});
+          return httpParams.set(key, array, { explode: explode, delimiter: ',' });
         } else if (paramStyle === QueryParamStyle.SpaceDelimited) {
-          return httpParams.set(key, array, {explode: explode, delimiter: ' '});
+          return httpParams.set(key, array, { explode: explode, delimiter: ' ' });
         } else {
           // PipeDelimited
-          return httpParams.set(key, array, {explode: explode, delimiter: '|'});
+          return httpParams.set(key, array, { explode: explode, delimiter: '|' });
         }
       } else {
         // Otherwise, if it's an object, add each field.

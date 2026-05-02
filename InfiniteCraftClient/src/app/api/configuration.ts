@@ -1,6 +1,6 @@
-import {HttpHeaders, HttpParameterCodec} from '@angular/common/http';
-import {Param} from './param';
-import {OpenApiHttpParams} from './query.params';
+import { HttpHeaders, HttpParameterCodec } from '@angular/common/http';
+import { Param } from './param';
+import { OpenApiHttpParams } from './query.params';
 
 export interface ConfigurationParameters {
   /**
@@ -68,16 +68,16 @@ export class Configuration {
   credentials: { [key: string]: string | (() => string | undefined) };
 
   constructor({
-                accessToken,
-                apiKeys,
-                basePath,
-                credentials,
-                encodeParam,
-                encoder,
-                password,
-                username,
-                withCredentials,
-              }: ConfigurationParameters = {}) {
+    accessToken,
+    apiKeys,
+    basePath,
+    credentials,
+    encodeParam,
+    encoder,
+    password,
+    username,
+    withCredentials,
+  }: ConfigurationParameters = {}) {
     if (apiKeys) {
       this.apiKeys = apiKeys;
     }

@@ -1,5 +1,5 @@
-import {HttpParameterCodec, HttpParams} from '@angular/common/http';
-import {CustomHttpParameterCodec, IdentityHttpParameterCodec} from './encoder';
+import { HttpParameterCodec, HttpParams } from '@angular/common/http';
+import { CustomHttpParameterCodec, IdentityHttpParameterCodec } from './encoder';
 
 export enum QueryParamStyle {
   Json,
@@ -58,7 +58,7 @@ export class OpenApiHttpParams {
   set(key: string, values: string[] | string, options?: ParamOptions): this {
     const arr = Array.isArray(values) ? values.slice() : [values];
     const opts = this.resolveOptions(options);
-    this.params.set(key, {values: arr, options: opts});
+    this.params.set(key, { values: arr, options: opts });
     return this;
   }
 
@@ -71,7 +71,7 @@ export class OpenApiHttpParams {
     if (entry) {
       // If new options provided, override the stored options for subsequent serialization
       if (options) {
-        entry.options = this.resolveOptions({...entry.options, ...options});
+        entry.options = this.resolveOptions({ ...entry.options, ...options });
       }
       entry.values.push(value);
     } else {
@@ -131,7 +131,7 @@ export class OpenApiHttpParams {
   toHttpParams(): HttpParams {
     const records = this.toRecord();
 
-    let httpParams = new HttpParams({encoder: new IdentityHttpParameterCodec()});
+    let httpParams = new HttpParams({ encoder: new IdentityHttpParameterCodec() });
 
     return httpParams.appendAll(records);
   }
@@ -159,7 +159,7 @@ export function concatHttpParamsObject(
     }
   }
 
-  return httpParams.set(key, keyAndValues, {explode: false, delimiter: delimiter});
+  return httpParams.set(key, keyAndValues, { explode: false, delimiter: delimiter });
 }
 
 function convertToString(value: any): string {

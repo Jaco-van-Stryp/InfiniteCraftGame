@@ -1,1 +1,4 @@
-<p>game works!</p>
+<input [(ngModel)]="wordOne">
+<input [(ngModel)]="wordTwo">
+<label>{{ wordCombined }}</label>
+<p-button (click)="setCombinedWords()">Combine Words</p-button>

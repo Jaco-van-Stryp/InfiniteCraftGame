@@ -40,6 +40,7 @@ export class Game implements OnInit {
   canvasWords = signal<CanvasWord[]>([]);
   combining = signal(false);
   lastDiscovery = signal<string | null>(null);
+  localUser: string = '';
   filteredWords = computed(() => {
     const q = this.searchQuery().toLowerCase();
     const seen = new Set<string>();
@@ -89,7 +90,14 @@ export class Game implements OnInit {
   ];
 
   ngOnInit() {
-    this.gameService.getAllWords().subscribe((words) => {
+    let localUser = localStorage.getItem('localUserId');
+    if (localUser == null) {
+      const guid = crypto.randomUUID();
+      localStorage.setItem('localUserId', guid);
+      localUser = guid;
+    }
+    this.localUser = localUser;
+    this.gameService.getAllWords(this.localUser).subscribe((words) => {
       this.allWords.set(words);
     });
   }
@@ -175,7 +183,11 @@ export class Game implements OnInit {
       ),
     );
 
-    const command: CombineWordCommand = { wordOne: wordA.word, wordTwo: wordB.word };
+    const command: CombineWordCommand = {
+      wordOne: wordA.word,
+      wordTwo: wordB.word,
+      userId: this.localUser,
+    };
     this.gameService.combineWord(command).subscribe((response) => {
       const combined = response.wordCombination ?? '???';
       const midX = (wordA.x + wordB.x) / 2;

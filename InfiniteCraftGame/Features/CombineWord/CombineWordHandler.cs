@@ -13,7 +13,8 @@ public class CombineWordHandler(IWordGenerationService wordGenerationService)
     {
         var combinedWord = await wordGenerationService.GenerateWord(
             wordOne: request.WordOne,
-            wordTwo: request.WordTwo
+            wordTwo: request.WordTwo,
+            userId: request.UserId
         );
         return combinedWord;
     }

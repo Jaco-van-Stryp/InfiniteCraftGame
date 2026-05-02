@@ -22,22 +22,6 @@ namespace InfiniteCraftGame.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("InfiniteCraftGame.Infrastructure.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
             modelBuilder.Entity("InfiniteCraftGame.Infrastructure.Entities.UserWords", b =>
                 {
                     b.Property<Guid>("Id")
@@ -53,8 +37,6 @@ namespace InfiniteCraftGame.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserWords");
                 });
@@ -85,27 +67,7 @@ namespace InfiniteCraftGame.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiscoveredById");
-
                     b.ToTable("WordCombinations");
-                });
-
-            modelBuilder.Entity("InfiniteCraftGame.Infrastructure.Entities.UserWords", b =>
-                {
-                    b.HasOne("InfiniteCraftGame.Infrastructure.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InfiniteCraftGame.Infrastructure.Entities.WordCombinations", b =>
-                {
-                    b.HasOne("InfiniteCraftGame.Infrastructure.Entities.User", "DiscoveredBy")
-                        .WithMany()
-                        .HasForeignKey("DiscoveredById");
-
-                    b.Navigation("DiscoveredBy");
                 });
 #pragma warning restore 612, 618
         }

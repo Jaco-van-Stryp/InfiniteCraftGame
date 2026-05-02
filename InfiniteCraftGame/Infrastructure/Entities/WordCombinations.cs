@@ -15,6 +15,5 @@ public class WordCombinations
     [MaxLength(255)]
     public required string WordCombined { get; init; }
 
-    public User? DiscoveredBy { get; init; } = null!;
     public Guid? DiscoveredById { get; init; }
 }

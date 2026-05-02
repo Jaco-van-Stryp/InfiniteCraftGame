@@ -10,12 +10,16 @@ namespace InfiniteCraftGame.Services.WordGenerationService;
 public class WordGenerationService(AppDbContext context, IAiService aiService)
     : IWordGenerationService
 {
-    public async Task<CombineWordResponse> GenerateWord(string wordOne, string wordTwo)
+    public async Task<CombineWordResponse> GenerateWord(string wordOne, string wordTwo, Guid userId)
     {
-        return await GetWordCombination(wordOne, wordTwo);
+        return await GetWordCombination(wordOne, wordTwo, userId);
     }
 
-    private async Task<CombineWordResponse> GetWordCombination(string wordOne, string wordTwo)
+    private async Task<CombineWordResponse> GetWordCombination(
+        string wordOne,
+        string wordTwo,
+        Guid userId
+    )
     {
         var w1 = wordOne.ToLower();
         var w2 = wordTwo.ToLower();
@@ -27,7 +31,7 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
         if (word == null)
         {
             return new CombineWordResponse(
-                WordCombination: await CombineWordsAsync(wordOne, wordTwo),
+                WordCombination: await CombineWordsAsync(wordOne, wordTwo, userId),
                 FirstDiscovery: true
             );
         }
@@ -35,7 +39,7 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
         return new CombineWordResponse(WordCombination: word.WordCombined, FirstDiscovery: false);
     }
 
-    private async Task<string> CombineWordsAsync(string wordOne, string wordTwo)
+    private async Task<string> CombineWordsAsync(string wordOne, string wordTwo, Guid userId)
     {
         var result = await aiService.GenerateTextAsync(
             InfiniteCraftSystemPrompt(),
@@ -54,9 +58,10 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
             WordOne = wordOne,
             WordTwo = wordTwo,
             WordCombined = result,
-        }; // TODO - Add user tracking here
+            DiscoveredById = userId,
+        };
 
-        var userWord = new UserWords { WordUnlocked = result }; //TODO - Add user tracking here
+        var userWord = new UserWords { WordUnlocked = result, UserId = userId };
         await context.UserWords.AddAsync(userWord);
         await context.WordCombinations.AddAsync(combinedWord);
         await context.SaveChangesAsync();

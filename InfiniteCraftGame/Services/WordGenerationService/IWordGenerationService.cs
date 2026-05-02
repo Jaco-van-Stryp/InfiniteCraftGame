@@ -4,5 +4,5 @@ namespace InfiniteCraftGame.Services.WordGenerationService;
 
 public interface IWordGenerationService
 {
-    Task<CombineWordResponse> GenerateWord(string wordOne, string wordTwo);
+    Task<CombineWordResponse> GenerateWord(string wordOne, string wordTwo, Guid userId);
 }

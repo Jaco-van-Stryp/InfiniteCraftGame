@@ -2,4 +2,5 @@
 
 namespace InfiniteCraftGame.Features.CombineWord;
 
-public record CombineWordCommand(string WordOne, string WordTwo) : IRequest<CombineWordResponse>;
+public readonly record struct CombineWordCommand(string WordOne, string WordTwo, Guid UserId)
+    : IRequest<CombineWordResponse>;

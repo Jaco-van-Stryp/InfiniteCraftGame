@@ -9,6 +9,7 @@
  */
 
 export interface CombineWordCommand {
-  wordOne: string;
-  wordTwo: string;
+  wordOne?: string;
+  wordTwo?: string;
+  userId?: string;
 }

@@ -9,6 +9,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
 import { CombineWordCommand, GetAllWordsResponse, InfiniteCraftGameService } from '../api';
+import { SoundService } from '../sound.service';
 import { Word } from '../word/word';
 
 interface CanvasWord {
@@ -51,6 +52,7 @@ export class Game implements OnInit {
     return unique.filter((w) => w.word.toLowerCase().includes(q));
   });
   private gameService = inject(InfiniteCraftGameService);
+  private sound = inject(SoundService);
   private dragState: DragState | null = null;
 
   private readonly EMOJIS = [
@@ -96,6 +98,7 @@ export class Game implements OnInit {
     const id = crypto.randomUUID();
     const x = 80 + Math.random() * 500;
     const y = 60 + Math.random() * 350;
+    this.sound.place();
     this.canvasWords.update((words) => [
       ...words,
       { instanceId: id, word, x, y, isNew: true, isCombining: false },
@@ -162,6 +165,7 @@ export class Game implements OnInit {
   }
 
   combine(wordA: CanvasWord, wordB: CanvasWord) {
+    this.sound.combining();
     this.combining.set(true);
     this.canvasWords.update((words) =>
       words.map((w) =>
@@ -194,8 +198,11 @@ export class Game implements OnInit {
       }
 
       if (response.firstDiscovery && isNewWord) {
+        this.sound.discovery();
         this.lastDiscovery.set(combined);
         setTimeout(() => this.lastDiscovery.set(null), 3500);
+      } else {
+        this.sound.result();
       }
 
       this.combining.set(false);

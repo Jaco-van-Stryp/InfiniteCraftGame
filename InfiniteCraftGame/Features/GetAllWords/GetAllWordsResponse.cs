@@ -1,3 +1,3 @@
 ﻿namespace InfiniteCraftGame.Features.GetAllWords;
 
-public record GetAllWordsResponse(Guid Id, string Word, string Emoji);
+public record GetAllWordsResponse(Guid Id, string Word, string Emoji, string? Definition = null);

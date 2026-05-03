@@ -13,4 +13,7 @@ public class UserWords
     public string? Emoji { get; init; }
 
     public Guid? UserId { get; init; }
+
+    [MaxLength(2550)]
+    public string? Definition { get; init; }
 }

@@ -4,15 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace InfiniteCraftGame.Services.AIService;
 
-public class AiService : IAiService
+public class AiService(IOptions<AiServiceOptions> options) : IAiService
 {
     private const string ModelId = "claude-haiku-4-5";
-    private readonly AnthropicClient _client;
-
-    public AiService(IOptions<AiServiceOptions> options)
-    {
-        _client = new AnthropicClient { ApiKey = options.Value.ApiKey };
-    }
+    private readonly AnthropicClient _client = new() { ApiKey = options.Value.ApiKey };
 
     public async Task<string> GenerateTextAsync(
         string systemPrompt,
@@ -31,8 +26,9 @@ public class AiService : IAiService
                     {
                         new() { Text = systemPrompt, CacheControl = new CacheControlEphemeral() },
                     },
-                    Messages = [new() { Role = Role.User, Content = userMessage }],
-                }
+                    Messages = [new MessageParam { Role = Role.User, Content = userMessage }],
+                },
+                ct
             );
 
             return response.Content.Select(b => b.Value).OfType<TextBlock>().FirstOrDefault()?.Text

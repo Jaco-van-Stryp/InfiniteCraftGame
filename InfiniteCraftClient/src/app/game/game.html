@@ -53,6 +53,17 @@
       </div>
     }
 
+    <!-- Definition card -->
+    @if (combineCard()) {
+      <div aria-live="polite" class="definition-card" role="status">
+        <div class="dc-header">
+          <span aria-hidden="true" class="dc-emoji">{{ combineCard()!.emoji }}</span>
+          <strong class="dc-word">{{ combineCard()!.word }}</strong>
+        </div>
+        <p class="dc-definition">{{ combineCard()!.definition }}</p>
+      </div>
+    }
+
     <!-- Combining indicator -->
     @if (combining()) {
       <div aria-label="Combining…" aria-live="polite" class="combining-indicator">

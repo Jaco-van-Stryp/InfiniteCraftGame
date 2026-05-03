@@ -2,6 +2,7 @@ using InfiniteCraftGame.Features.CombineWord;
 using InfiniteCraftGame.Features.GetAllWords;
 using InfiniteCraftGame.Infrastructure.Data;
 using InfiniteCraftGame.Services.AIService;
+using InfiniteCraftGame.Services.DictionaryService;
 using InfiniteCraftGame.Services.WordGenerationService;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IWordGenerationService, WordGenerationService>();
 
 builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddHttpClient<IDictionaryService, DictionaryService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.dictionaryapi.dev/api/v2/");
+});
 builder
     .Services.AddOptions<AiServiceOptions>()
     .BindConfiguration("AiService")
@@ -43,6 +48,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAnyOrigin");
 app.MapCombineWordEndpoint();
 app.MapGetAllWordsEndpoint();
+
 app.UseHttpsRedirection();
 
 app.Run();

@@ -41,6 +41,8 @@ export class Game implements OnInit {
   canvasWords = signal<CanvasWord[]>([]);
   combining = signal(false);
   lastDiscovery = signal<string | null>(null);
+  combineCard = signal<{ word: string; emoji: string; definition: string } | null>(null);
+  private combineCardTimer: ReturnType<typeof setTimeout> | null = null;
   localUser: string = '';
   filteredWords = computed(() => {
     const q = this.searchQuery().toLowerCase();
@@ -152,6 +154,8 @@ export class Game implements OnInit {
   }
 
   combine(wordA: CanvasWord, wordB: CanvasWord) {
+    this.combineCard.set(null);
+    if (this.combineCardTimer) clearTimeout(this.combineCardTimer);
     this.sound.combining();
     this.combining.set(true);
     this.canvasWords.update((words) =>
@@ -194,7 +198,15 @@ export class Game implements OnInit {
 
       const isNewWord = !this.allWords().some((w) => w.word === combined);
       if (isNewWord) {
-        this.allWords.update((ws) => [...ws, { id: crypto.randomUUID(), word: combined, emoji }]);
+        this.allWords.update((ws) => [
+          ...ws,
+          { id: crypto.randomUUID(), word: combined, emoji, definition: response.definition },
+        ]);
+      }
+
+      if (response.definition) {
+        this.combineCard.set({ word: combined, emoji, definition: response.definition });
+        this.combineCardTimer = setTimeout(() => this.combineCard.set(null), 5000);
       }
 
       if (response.firstDiscovery && isNewWord) {

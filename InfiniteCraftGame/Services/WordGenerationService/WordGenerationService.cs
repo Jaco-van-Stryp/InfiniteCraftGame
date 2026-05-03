@@ -1,14 +1,18 @@
-﻿using InfiniteCraftGame.Features.CombineWord;
+using InfiniteCraftGame.Features.CombineWord;
 using InfiniteCraftGame.Infrastructure.Data;
 using InfiniteCraftGame.Infrastructure.Entities;
 using InfiniteCraftGame.Services.AIService;
+using InfiniteCraftGame.Services.DictionaryService;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace InfiniteCraftGame.Services.WordGenerationService;
 
-public class WordGenerationService(AppDbContext context, IAiService aiService)
-    : IWordGenerationService
+public class WordGenerationService(
+    AppDbContext context,
+    IAiService aiService,
+    IDictionaryService dictionaryService
+) : IWordGenerationService
 {
     public async Task<CombineWordResponse> GenerateWord(string wordOne, string wordTwo, Guid userId)
     {
@@ -30,22 +34,24 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
 
         if (word == null)
         {
-            var (combined, emoji) = await CombineWordsAsync(wordOne, wordTwo, userId);
+            var (combined, emoji, definition) = await CombineWordsAsync(wordOne, wordTwo, userId);
             return new CombineWordResponse(
                 WordCombination: combined,
                 Emoji: emoji,
-                FirstDiscovery: true
+                FirstDiscovery: true,
+                Definition: definition
             );
         }
 
         return new CombineWordResponse(
             WordCombination: word.WordCombined,
             Emoji: word.Emoji ?? "✨",
-            FirstDiscovery: false
+            FirstDiscovery: false,
+            Definition: word.Definition
         );
     }
 
-    private async Task<(string Word, string Emoji)> CombineWordsAsync(
+    private async Task<(string Word, string Emoji, string? Definition)> CombineWordsAsync(
         string wordOne,
         string wordTwo,
         Guid userId
@@ -67,7 +73,13 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
         var emoji = parts.Length > 1 ? parts[1].Trim() : "✨";
 
         if (string.IsNullOrWhiteSpace(word) || word.Any(char.IsWhiteSpace))
-            return ("Nothing", "❓");
+            return ("Nothing", "❓", null);
+
+        var dictionaryResult = await dictionaryService.GetDefinitionAsync(word);
+        var definition = dictionaryResult
+            ?.Meanings.FirstOrDefault()
+            .Definitions?.FirstOrDefault()
+            .Definition;
 
         var combinedWord = new WordCombinations
         {
@@ -76,6 +88,7 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
             WordCombined = word,
             Emoji = emoji,
             DiscoveredById = userId,
+            Definition = definition,
         };
 
         var userWord = new UserWords
@@ -83,11 +96,12 @@ public class WordGenerationService(AppDbContext context, IAiService aiService)
             WordUnlocked = word,
             Emoji = emoji,
             UserId = userId,
+            Definition = definition,
         };
         await context.UserWords.AddAsync(userWord);
         await context.WordCombinations.AddAsync(combinedWord);
         await context.SaveChangesAsync();
-        return (word, emoji);
+        return (word, emoji, definition);
     }
 
     private string InfiniteCraftSystemPrompt() =>

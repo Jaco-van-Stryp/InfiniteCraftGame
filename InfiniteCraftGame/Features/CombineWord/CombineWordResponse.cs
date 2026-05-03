@@ -3,5 +3,6 @@
 public readonly record struct CombineWordResponse(
     string WordCombination,
     string Emoji,
-    bool FirstDiscovery
+    bool FirstDiscovery,
+    string? Definition
 );
